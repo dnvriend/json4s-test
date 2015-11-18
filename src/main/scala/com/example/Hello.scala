@@ -22,5 +22,15 @@ object Hello extends App {
   assert(nodes.toString == "<name>Joe</name>")      //
   val jvalFromXml: JValue = toJson(nodes)           // JValue from NodeSeq
   assert(jvalFromXml.extract[Person] == person)     // JValue to case class
+  
+    def mapToJson(map: Map[String, Any]): String = write(map)
+
+  val map: java.util.Map[String, String] = new java.util.HashMap()
+  map.put("a", "b")
+  map.put("c", "d")
+
+  assert(mapToJson(Map("scala" -> "isCool!")) == """{"scala":"isCool!"}""")
+  assert(mapToJson(Map("a" -> 1, "b" -> 2)) == """{"a":1,"b":2}""")
+  assert(mapToJson(map.toMap) == """{"a":"b","c":"d"}""")
 }
 
