@@ -26,6 +26,7 @@ class MarshalPersonTest extends TestSpec {
     implicit val formats: Formats = Serialization.formats(NoTypeHints)
     val person = Person("John", "Doe", 30, married = false)
     val json: String = write(person)
+    read[Person](json) shouldBe person
     json shouldBe """{"first":"John","last":"Doe","age":30,"married":false}"""
   }
 
@@ -33,6 +34,7 @@ class MarshalPersonTest extends TestSpec {
     implicit val formats: Formats = Serialization.formats(ShortTypeHints(List(classOf[Person])))
     val person = Person("John", "Doe", 30, married = false)
     val json: String = write(person)
+    read[Person](json) shouldBe person
     json shouldBe """{"jsonClass":"Person","first":"John","last":"Doe","age":30,"married":false}"""
   }
 
@@ -40,6 +42,7 @@ class MarshalPersonTest extends TestSpec {
     implicit val formats: Formats = Serialization.formats(FullTypeHints(List(classOf[Person])))
     val person = Person("John", "Doe", 30, married = false)
     val json: String = write(person)
+    read[Person](json) shouldBe person
     json shouldBe """{"jsonClass":"com.github.dnvriend.Person","first":"John","last":"Doe","age":30,"married":false}"""
   }
 }

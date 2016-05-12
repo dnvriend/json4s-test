@@ -18,6 +18,7 @@ package com.github.dnvriend.rest
 
 import java.net.URL
 
+import com.github.dnvriend.rest.RestClientTest.TheResponse
 import com.github.dnvriend.{ Person, TestSpec }
 import com.stackmob.newman._
 import com.stackmob.newman.dsl._
@@ -25,6 +26,12 @@ import org.json4s.native.JsonMethods._
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization._
 import org.json4s.{ Formats, JValue, NoTypeHints }
+
+import scalaz.Success
+
+object RestClientTest {
+  case class TheResponse(origin: String, url: String)
+}
 
 class RestClientTest extends TestSpec {
   // put this in a safe place somewhere
@@ -34,8 +41,6 @@ class RestClientTest extends TestSpec {
   // for more info see: https://httpbin.org/
   val getUrl = new URL("https://httpbin.org/get")
   val postUrl = new URL("https://httpbin.org/post")
-
-  case class TheResponse(origin: String, url: String)
 
   // for more info about newman see: https://github.com/megamsys/newman/
 
@@ -50,5 +55,15 @@ class RestClientTest extends TestSpec {
     val json: String = POST(postUrl).addBody(personJson).apply.futureValue.bodyString
     val jsonAST: JValue = parse(json)
     jsonAST.extract[TheResponse].url shouldBe "https://httpbin.org/post"
+
+    // or
+    read[TheResponse](POST(postUrl).addBody(personJson).apply.futureValue.bodyString) should matchPattern {
+      case TheResponse(_, "https://httpbin.org/post") ⇒
+    }
+
+    // or
+    POST(postUrl).addBody(personJson).apply.futureValue.bodyAsCaseClass[TheResponse] should matchPattern {
+      case Success(theResponse) ⇒
+    }
   }
 }
