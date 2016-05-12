@@ -19,10 +19,18 @@ package com.github.dnvriend.marshal
 import com.github.dnvriend.{ Person, TestSpec }
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization._
-import org.json4s.{ Formats, FullTypeHints, NoTypeHints, ShortTypeHints }
+import org.json4s.{ DefaultFormats, Formats, FullTypeHints, NoTypeHints, ShortTypeHints }
 
 class MarshalPersonTest extends TestSpec {
-  "person" should "be marshalled without type hints" in {
+  it should "be marshalled with DefaultFormats" in {
+    implicit val formats: Formats = DefaultFormats // which uses NoTypeHints for the types
+    val person = Person("John", "Doe", 30, married = false)
+    val json: String = write(person)
+    read[Person](json) shouldBe person
+    json shouldBe """{"first":"John","last":"Doe","age":30,"married":false}"""
+  }
+
+  it should "be marshalled without type hints" in {
     implicit val formats: Formats = Serialization.formats(NoTypeHints)
     val person = Person("John", "Doe", 30, married = false)
     val json: String = write(person)
